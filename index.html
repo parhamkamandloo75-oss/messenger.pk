@@ -1,0 +1,899 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,interactive-widget=resizes-content">
+<meta name="theme-color" content="#ffffff">
+<title>پیام‌رسان</title>
+<style>
+:root{--brand:#3390ec;--bg:#fff;--card:#fff;--hd:#fff;--line:#e6e9ec;--mine:#eeffde;--other:#fff;--text:#0f1419;--muted:#707579;--danger:#e53935;--inp:#f1f3f4;--blend:normal;--cbg:#dbeafb;--nl:38%}
+[data-theme=dark]{--brand:#6ab3f3;--hd:#17212b;--bg:#0e1621;--card:#17212b;--line:#0e1621;--mine:#2b5278;--other:#182533;--text:#f5f5f5;--muted:#7f91a4;--inp:#0e1621;--blend:multiply;--cbg:#1b2733;--nl:70%}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;font-family:Vazirmatn,Tahoma,system-ui,sans-serif;background:var(--bg);color:var(--text)}
+[hidden]{display:none!important}
+button{font:inherit;color:inherit;cursor:pointer}
+input{width:100%;padding:12px 14px;border:1.5px solid var(--line);border-radius:12px;font:inherit;font-size:16px;background:var(--inp);color:var(--text);outline:none}
+input:focus{border-color:var(--brand)}
+input.ltr{direction:ltr;text-align:left}
+input[type=checkbox]{width:22px;height:22px;padding:0;accent-color:var(--brand);flex:none}
+svg{flex-shrink:0}
+.btn{width:100%;margin-top:14px;padding:12px;border:0;border-radius:12px;background:var(--brand);color:#fff;font-weight:bold;font-size:15px;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn.sec{background:var(--inp);color:var(--text);border:1px solid var(--line)}
+.btn.dng{color:var(--danger)}
+.btn:disabled{opacity:.6}
+.ib{border:0;background:none;color:var(--muted);padding:0 2px;display:inline-flex;align-items:center;justify-content:center}
+.flip{display:block}[dir=rtl] .flip{transform:scaleX(-1)}
+.av{border-radius:50%;object-fit:cover;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:bold;flex-shrink:0}
+label{display:block;font-size:13px;margin:12px 0 5px;color:var(--muted)}
+.err{margin-top:10px;color:var(--danger);font-size:13px;text-align:center;min-height:18px}
+.sub{margin:0 0 16px;text-align:center;color:var(--muted);font-size:13px}
+
+/* ورود */
+#auth{min-height:100dvh;display:flex;align-items:center;justify-content:center;padding:20px}
+.card{background:var(--card);width:100%;max-width:380px;border-radius:18px;padding:24px;box-shadow:0 6px 24px rgba(0,0,0,.1)}
+.card h1{margin:0 0 4px;font-size:22px;color:var(--brand);text-align:center}
+.logo{width:64px;height:64px;margin:0 auto 10px;border-radius:50%;background:var(--brand);color:#fff;display:flex;align-items:center;justify-content:center}
+.tabs{display:flex;background:var(--inp);border-radius:12px;padding:4px;margin-bottom:12px}
+.tabs button{flex:1;border:0;background:none;padding:9px;border-radius:9px;color:var(--muted)}
+.tabs button.on{background:var(--card);color:var(--brand);font-weight:bold;box-shadow:0 1px 4px rgba(0,0,0,.12)}
+
+/* قالب */
+#app{height:100dvh;display:flex}
+#side{width:100%;display:flex;flex-direction:column;background:var(--card);position:relative;min-width:0}
+#room{display:none;flex:1;flex-direction:column;min-width:0;background:var(--bg)}
+#app.open #side{display:none}#app.open #room{display:flex}
+.hd{display:flex;align-items:center;gap:10px;padding:8px 12px;padding-top:max(8px,env(safe-area-inset-top));background:var(--hd);border-bottom:1px solid var(--line);min-height:56px}
+.hd .t{flex:1;min-width:0}.hd .t b{display:block;font-size:16px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.hd .t small{color:var(--muted);font-size:12px;display:flex;align-items:center}
+.hd button.i{background:none;border:0;color:var(--muted);width:38px;height:38px;display:flex;align-items:center;justify-content:center}
+#rhd .t{cursor:pointer}
+
+/* لیست چت‌ها */
+#convs{flex:1;overflow-y:auto}
+.conv{display:flex;align-items:center;gap:12px;padding:9px 14px;cursor:pointer}
+.conv:active,.conv.on{background:var(--inp)}
+.conv .cm{flex:1;min-width:0}
+.conv .r1,.conv .r2{display:flex;align-items:center;gap:8px}
+.conv .r1 b{flex:1;min-width:0;font-size:15px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.conv .tm{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:2px;flex:none}
+.conv .tm .ck{color:var(--brand);display:inline-flex}
+.conv .pv{flex:1;min-width:0;font-size:14px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-height:20px}
+.conv .bd{background:var(--brand);color:#fff;border-radius:11px;min-width:22px;height:22px;padding:0 6px;font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:center;flex:none}
+[data-theme=dark] .conv .bd{color:#0e1621}
+#fab{position:absolute;bottom:20px;inset-inline-end:20px;width:56px;height:56px;border-radius:50%;border:0;background:var(--brand);color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(51,144,236,.45)}
+[data-theme=dark] #fab{color:#0e1621}
+
+/* پیام‌ها */
+#listwrap{flex:1;position:relative;min-height:0;display:flex;flex-direction:column}
+#list{direction:ltr;flex:1;overflow-y:auto;padding:8px 10px 10px;display:flex;flex-direction:column;background:url("data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAoHBwgHBgoICAgLCgoLDhgQDg0NDh0VFhEYIx8lJCIfIiEmKzcvJik0KSEiMEExNDk7Pj4+JS5ESUM8SDc9Pjv/2wBDAQoLCw4NDhwQEBw7KCIoOzs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozv/wAARCAIAAgADASIAAhEBAxEB/8QAGAABAQEBAQAAAAAAAAAAAAAAAAECAwf/xAAtEAEBAAEDAwQCAgICAwEBAAAAARECITESQVEyYXGBIpGhsUJSYsED0eHx8P/EABYBAQEBAAAAAAAAAAAAAAAAAAABA//EABQRAQAAAAAAAAAAAAAAAAAAAAD/2gAMAwEAAhEDEQA/APWQGzEOJkAZzbx/+tS5ZlsmOmrpm1t5qjSBEDAZIABQMGFQDAqAJzsqWS9lGc7XTeW8JJJvIoACAAAbTmjMnVvq+p4A6p7/AKWWXikzxef7S77Y38qNCS52vMUAwCBgVABLcdspOrOeb4BoSXMyoAKCJb2xmql5lkt+AM2c7+6s3Nsl03ndoAwoCAAAUAAAIAzq2svYs3lvN/hbJZul08fldlE3t0/y2k04z7+VAAQAAAAAAAAAAAAEtxFZ1Tq1aZ9gmLn8rfpcY9NvxWkm9yoS5ippn5alAAQAAAAGc2+n+WmZbLZi2KLLL8qzp5t3aBnX6Ktkk4LMzCTf8bzOQZxbO/s3pueeZ2X4Z1bfl45Bf8/pYmnvfKgAIBgMgmqZlS9VnE/bQoAIAAAAAABQAMDOq2Y8d8At1Sbc1NOq3OYnq2nC5xrnwqNAIoAAYEzKCgAJbjtVZ0yTPnjPlRrORmSdVxt2aAAQGbvZPtrjdNPm91EzZti3wdV/1q2ZUEllVLJeYaZjM8AoCAzq2xqnZpNUzOcKGZbydUm3N9k6JOd/lrEnGwJJie/dQQGZr03u059O23M7eVR0HPRi8W6b4azqnMzPYVoSWXuqAYFBBUASyVRROm/7fuHTvm3KqCBgQAAAACgAADOreyfZvp23s7Lzqt8TCqM9X/HV+jrnvnxhoBnOqYtxzjDWWdfb5jQACAEAY06LO+PhqS5zcKKgCatWNsciqnVniZTGfVc+yXVmY0/wCW3PTnN8TiLo0zTnCyTTMrpmNMEVUgihiZzgoCSScRQAABnXxJ5uGmNW9x9xvlRNPV/lhflLLiydycYv8gSy8E9V+lmJMRNO+b5oKAgAABFBIqKAzfX8xpnVvPebgmrT3hp1ed55XMxnsz1YttmJe3lRbvdpv58NSbJp9M+FQFRQEVKAAAVOqS4qgBFBAZ9Wr2ih1eJadU7yz5Wr/QBlnTten9NAAl4QNMxITVLqunwT0xe6glslx3Zmq9dm2I1iZzjcE1T8asuZk1X8aSYkgKAgAAAAGMgDNm+M3CaJ3vPjwuuW4wdM7bXyqGqcTzWkmerftFFIQogCWycrkAwoAlVASyWYqY6eN54aFE6p5MzzFxLzumJ4n6BM9XHHlrgAAEAS3Fkxym+mZ5UaMggKgCoGAZmmS/17LZNUxVwKHEwAgAAAZAS5s22UBnTJdOccmnvd8dsnRFkxFFAQGdPFnvWk9Nz2vKiem222ymmY+Oy5l75LqxtyB/nPhcJJje81QAEGc9Nx2vDQz02cX6Ua28GGfy9lxb6r9QEv5XHactHExAABAEuqT58Gd8XaqKBlAAAAoGVSKAgluICc6/iGbpuJMz54XTMfPdVGevzpsaGenvLgGlZ3lxWkEAAAAAAABNW82TGq2ZxzloUIqUQVKAGCJdXaZymbNtX7UbQEAVAS3fE//Dp8237SerV8mdUlzN+yi9OOLYS555iZ1Zn488+x/nPgGjBBAAAAAABLJeYSScTCgAAAJLLwCgABQAAAAGbiavlL+WJnLYoAIAAAYAUTIBWb6p+2mM41S34qjVzjbk05xvyrOrqxifsGiVO3k0yaZiIF9Wn5aZu+qezSiAIJfZJpzM27/wBNJ0+9UNNtm6pJiYUABABOqf8A9FFEll4uVQAAS7apd/pOdUllawYUKZBAyZAEu2rq87VftNU6pjOCaYoZkm9JN7b+iSTiRcAGQwgFABOrT5TM1arO0anhQ2s2olmN5zP5XmZABUECgM3fVi24pZ4tlq2ZxvZg6d+b+1FCCAUMAAlsneAoksvFyoAGAFQAS3HzVyk31W+NlEnVe8n0ucXf9xLter9rjOnHkFE076YoCXTLyoDMvTtePLXInTO23wCpbj/0dP8AypJJxEDTMc83lTJQBnGqb/ws3mVFAQAAAS8UGfXv27NdU6c3ZJZNEvsmL1dWJv8AwqLZ1b8e/dZc5l5hp8Xk/wA/oVSggBlQEwoCCoACghQwBkwUwAluJVOAZ0yTTL5XvGdNxtfpvMndQTT6YmeuYnHetAKmRACgAZAAyAQAGb+VxvifysknENO098p06ppx1b+VFumUlucX6LdWZJjHcvqn2CgIAGAGfTq9q0cqJ7Jnp28ce507YzVmmT580CTEkUMIBgAAIAAAADONXTjbjDUBQCiAAAADE21SXjs2c8s9E7Wz7UNW2Kumc2806ZFgCoqAJAFRUBLe03vglzP+klktzjyZmrV22UaAQAhmUCgAAAzZtiTbunR02YmfpsUAEAMAAnVM4aUQBAMEUECgM241fMOqd8z5jQoz1ztm/Bp3zbzWgABAhkyAQAAABUKCoKCJNUtwmrteZ4LJNPHCjQmmWTdUAAAyUAGbq7ad2bzjm/xFGprl1YjTOmTq+I0AAgEADIABkAFRNWrG2M91FyE3mRAMAAGTIM6rZjx7Fm2d5jb5WzqmMp0+9/ajU4AQAS2RRYVnq86a1LLMwABATVMzZYAzpkxjG1XTx7dk6JPP7WTExFFAQFQAE6pnH8qBkADKoAJbjtlUvq0/ahLLwqXTLd4nRp8AtsnJLmEklNO8+wUwGEDCoYAABLMzFTonv+2hQAQBLcTNWXIJbiZTHVM27eI0zr07Wza+yiW9tP3V06cfKZmnVi8Thq7abRE075vmtJJiSeFFAEAS6sdlUIAgqFKAzp3zfNXVvZp88mZ8KGLPTZ9p1Wcz9NAJ1Z43JcwtxM+CTaQFpkEFQAAATVtPdPTv+11dvlLvt3qi3zEu1zPtMasb3afya/TmURsBFVAAKGQAAE1TOlRRNrpxicZwmibfK9M8RQAEFEMgM/5X22aSeqzzuoTfVjH2pazpllt8+/ALLNUyadrqnuqae980FVKICocAFZ6rfTPus6ucT8r/ABFRvrmZOarM0yap55aFAEGZM6t8+YYxq2+at05uc0mnFzmqKlmZhSoM6dEk33p09pdvDRhQAqAlzZsoCaeOOdqT1XHETpnusmFFAQAAZlzrvxDVpmqYqWXTql7f03nwomZnpzuXVjVNOLv3JN8qgzq9NaS72T7VQyAgAAAAczFZn4+r9tAM9c8pplvO0nEbFABAFARLZOS3EySd7yonV7X9LLLwqYzyCiS3OL9VQAEAwM5tzJ+1GhnN07XeZ5aQEsz7VRRnNnOn9LNU8X9KAzvq9o0CAADOq2cT7WSerOVY1afG2bvhULqzx+106en5TTqmf6+GrcTIGnm3zVSTEkaFQFQQVAAAVFAEVAAAMCgIAAKgCdNnpv1VAZ6r/rV/K9sfKmFEkwoIBkAS2SbpermcePK2ZiTVMTdRZZeFZ04ub7tAAIAAAAAAM6uJ8xdWbpsmxZmYJdvjYEs1STF+cl1Xrkk28ryccqJfVpaZn5XPbs0AAgVLnqzIoozJeqWzhoAAEAAADMzgACAYTVLdOIoozNEkxydN2mdmgBQQAABMgAFBUpkBLbnE+/ZJNOd5mznKz136TObmY8KHTZ6f0suZkku+bumnv8g0KlQDAZADIBAAAAAAKAAAAAAmrV0zNVNUzpqhNem8VXOzbqkzLzGpxnTfqiNYVjq87NChCKgjM0Tvu0KJ06fH6Jp0zt+1AAEAAAAAAAAAAEuczfETp28Y7rZmbJeqy8bqLpts3U7AACAACoAAAAl1SfPg6vPKiiW4+fBLmIKACWXmcp1aZzt7VoUZzm/ju1NpgMIKlUBAKCW4+TpzzcpPXfbZczN8xROmeCWy4vHlM6tWnMmL7tavSCgIB2AGZOqZtzbx7Lptuf7TFnGr+Fm0UXACABkAIAmnbM8MWdN22/6au2qXzstsk3/SoZ7Wb+EnP48d/DHMxq87OoACKqCggACZzwrPVjM32qiyyqzp3tvPZoAE1emoM51dW1xLw1nV3mfgszMGm5nvFCWauP0qap1cczuS555iCkACAAAAAAAzbbcaZt3qjRWenTeZvPK4xxfoFElyoM241fJmXVPZoBnaat++5tdWZjZoEAEUKABlQEoqAqADPp1ZvF7+6+/cu8qTTZOcfCjXDFstm/demd835aAAQKAAAAJnfHdQAAAASzMwSY35vlRRm6JdUvhoMABRAMgACgmBUAAASzMsUBnOZJ55Lp8XHwWWXM+4dXtf0oSYtnkm+q3xsXOriXZqTEkAMlEDJkABMzOFAABnVbt29yzGnbmLZmYJ4vMVE31SapyuZ53S503Mm15kNUl/Kbimra9X7aZ1X8LfMaAFRAAADKW4lvgFElvFMzyosVDKCpRQSKACKAgAAAAABxuM6u08qM4tuZzldWdU3mPtrTtL5yl31Se+RFlzJVTRxZ4qimQEAMAGFTAAFZucycTyosstwqWSTGcY7mm2zcFICAAAUZuvTp5qjQCAQwAKmTIKmBQRNWcbXhpLMzCjOJJvLibrM43S6JfP7aAAQEs7zmLSKJLnj9Jjp3nHf2WyXmJ0Tvm/NBJM3E9PLZAAIZQAAGdW8x5aZ0726vPCi2Z2qdM7yX6W2SyW8qDPT4uFl3xef7VNUzAVUlzMiAogKIoIluJlpmzMwCZvMmyyy8JNWJM599l0zbN5qigVAZzjXvtMbNHMwDGvMmZy1tJunRp8L0ycRUNOc24xlQFATq0y70FEzLxVQAAEszNqoCWarMWzf2WTYwAZMiW4nGVFqZ8b/CY6t7c/HBdWNp2/gE1XE/K/UTpzN+bdp4XTM3qv1lf8/iCNAIqpQABmas3xO1UbQMIKigIAAZAAAAADCoAAUAIAJp9MLnGyS4tlmMqLiZynVOvp3aSSS5loJerqmLt3aGdXGJzQXR6YoAZMggAoJAAAAAAAAAAAIDNzbifaza47dknq1fK2Zn9KFkuxp22pLmF9cx4oKAgGAACgAAM6p3m1S6Z1SZ2/utXeYSaNvyuVGmdPFvmlmqTE3/6am0wAAgAAzrm2fC2yTbFwqYnhQkxMKZEFQAGc23GldVxptNtE9lExf9v4PynirbJi28nVJqk7gS5ipn857qAAgJdWL/fsWZmEmMdpnso0rOibZ8tAkBUELPIAm843nuZ/41cCiZt4mPkkxvzfK4AAEAZttzJPs303zFGglzJVQTJAAgGAAAFTIBkVAAAZt6bnt3XMxlWemdsz4UNpfGSZtzx4Jokvn5aAAQAABMzOFAAwAAAAAAAAAUKAUgBSgCapnTZDbXp9i7pNFk9X8KLieODEznuY1eZ+kvVJeKBPy1Z7RpJtJFwgAAJieIpgCbRUwAAUBUwAqCgIKCAAzqs06s+UtlmN5lsUOBUiAAAJbiJjVebj2ijQz0/8r+zN087zyDSpBBUACgAAAAAAAJbc4491Z1cbeVFuniZ3nc03P/tPyvM/lqbSQQARSmAAAABNXp277AnVbcaf3T8p4q6sTTmdjjFqhLn58Kzbxe8aAICBQyYAAAFASgAAARUAFQAABnNvp/azV9VJcZm/PhdO9t/Si5URAAAAAAAAAABmb677bNbZx3Sbar7mJ1Zk3USa5ZcZuCXqmcYaxJ2S3EyCaPS0kmJhoEAQEurFxi34Vm+ufCiyy8JdUnNW6ZSSTiYBOqeUsuqZvLWFBJczKs6PTjxs0AGBAAAAAAyAAAmrPTt2UBmY1b9ouMTbkxi5lwn5eyhq/LE8tJJhQAEE1WzTbEmu5xZv8tcsdHXpxeZ3Ua653zPlc5Yluna7riXebfANDObLi7tAAIAJbif9KKJNWedqoACAqAKgAKigioYAAAGc9Xpn3Wb+Wrplze97RUbll4vCs6JJnHloUCCCapbpxD8vZVUZ/L2iXqzOGqAKggGAAS+qKl9c+FFEszMEmJib4AymnVNUzDTeqZsw0DPGv5jSX1aVBRFQTAAKgZBnVm3GcQx0+nv2WzON8YOnfObVFAiAAAAAAAZABLtqz2qpZmWAtmY58Z338zu1M6tuPKX/AMeeLhRqTCggBgwAztNd9922bJeYozfys437tp0zOcTKgAIAzvq4uJ/ZNOm9lGhm3o75nhoBUEFEAS6t8TlJp3zq3WyXlnO9luZJ+1DVqt2nf+VxNGldPnPJq3xPNA0zGmRTkQFEAVCgAAAoIABWdXGe8aAJizJd5hMb5mxOr2UXEnES3G9PyviHTvm70CTe291FBFQiAQAAoAAAUAKAAADNtzJNvcs6ZmX/AOrZmbXCYtszePZRoBAAAIAAGQUQyAoAigAioCXb4ZzZnffwvq2vbknqqi6eOE08fFLen74+VkxAUBAAAY16bbLGxROnE2u6TN1ZsxthrAAqKgmRQEIADM/8kvbC6uMedk1fjvja7VUayJ0zGZtfYlucXkVchkQAwACoABkAMgAlsnKflfb5Ua2nNwxf/JJcSWpqxPT+WrzeyzTiyW5vNojYQRQCgDGOrVfbaL1Xjptvso0M9V76assvAKBEDAACoABkAAAZ1aumcZaZm+u2/Ch1eZhra8XLOmdP4/osnba+YDQzLc4vP9tAAIKgoM3TL/7Om59X8KqjM04975UUEBm8yZxKgssvDTFmN58YaUKYMKgAgCpbJyAoAIADOrtfFLe3lbMzFTTcXGrn+1RM2YmNs8tapLvdsFs72JpvVZM5wKunNm6gCoFuJlAGcW78eN1lzbLOFRVRUVEucbXdQGZidsX3TVqtm2cf2uv08J1TqzjP/SounTie5N9Vv0ucTJJiSCqqKgM24i1L65PEUJMQxvkucWw07yW7UFS6ZbuogmnvPCsz134jShkVMIBkwAluCXMZ2mu5+criXVLPnMVGgEUSc6p75VnVO/8AHlRLm78eFtuZbtFmqX/6WzG9giatpnv2aY0/lc+GxQIIAKCRRAFABmzPfDQDPTvN7VAFEAAAZm9/Lt2JtqxLmLdNtznBJi3fKiqggGAAOQBMScSRcKAigAgAzOqTEkwumYi5FBUKgqABZmYpJJMSACdEzn+FBQFRAZznVLnmYarN054uFGmdecfjme6zV2u1/tQTGZi+CSSSRUtxtN6Bp9Wq/TTMmJhYgRQBMioCYngkkuZFAIKgBgyAYl5mUxJxJFAAAICatWPeqKqTeZEAVAIETX6aBNUvCs2Y45hnV/r/ACo0J1TvmJ1eJkGiJLmS+WkEDAAAACdU7ZvwoonVM44+VAoqZQBUAyJmRQFTBkAADIAAAAGACBAUEBUwqAlkvKdPi2NCjPT51VZpk4UAFEBAoBlOvT5/hcy8XIGQAVCKCBgABQEDIDOnGnPGzWTE8KjMk6rZtjZoxJwCgCAl31Y7TerlNPf5UUS9XVMcd17oDOrbTfhbqksnlNXpqiyYmFpOJRBUFAQKDOq26ppn2uOnecdz/P5i91EsztTTxv22WJp73zQUgICXONlAZkzM22589jTbc94vT/ypJiYUWAqCAAAAAzq5ngF6pnH8qlkxjtDRLi77XjKo0JFRQAATICpTIAACoAHG7MnVvq47Q1+mlxIos2uP0lnVfx290xbPftF0y2c8dsCLLn5ipPXfiKiioAGTIBkAAS2TmqAAAAAACXONuU0WZsny0l053m18qKzi9XVc/VXq7atqc9wW8s6vT87LbJzUktubMeIDQCARQBAwDOrt8mdV/wAf3W0UZxbztPEaABUVBFQwCoAAAAAAACWZmFIDN02/5NSYkgKCpgygFKYBLcXGLfhPym+9zzDVtjV7l1zFx9KLLmKkmIoACAACWZljM31b8xtLJd+/lUONU+Eu35fs6dWc9U/S9Pe3IppnN8qAACAxvbbLxeG2dPe+aodV/wBaZv8Ar/LSAnTmW6uf6XT6Z8FTTxjwDQCAADN1dpz4WWX58Jxq77kvVq77KNGAQE6NPiKoJNMnEwYUBCqADNuLJJm1N9O+c+d1G0JczKoJTAUDCoAqZADJgUES3EytZ1+n4UWapbjv4LZObgslJpk+fIHVp8p6++J/a4IBp9O6szbVZ9xoABAVFBAMAKAIAAAADPVO0t+FGhnqxzLGgAEAAAAAAEvBp9M+F7M6fHeKE6t849lll4qppmO4GnON0nrv01dpummc3yCgIAAAAKACCgIKAAAzqmYl6rMWRtABQAAETVbMYVNW8BMXTvn5y1ymLebsqgBhATV6aqavSoSYmFE06ZptvkFZmrOqzHBNV67LiRoGdW2L4rTOriTzWwTBlUQAZ1TOqZ4uwLNUqsasbe+2W1RQEVMAAAAzq/K9P3Vm21Sba78RLeq7dv5VGrd8RPTfam8ub3NXae4rQCABgBLq7Sbql5lxnFUTec7zy0zc2zM2nu0Al0534vlQGfy8S/a51f6/yqgzi3m5UAAEGdVssk/aXOiZn6aszExczN49lH//2Q==") var(--cbg);background-size:340px;background-blend-mode:var(--blend);overscroll-behavior:contain}
+.sep{align-self:center;margin:10px 0 6px;padding:3px 12px;border-radius:12px;background:rgba(0,0,0,.28);color:#fff;font-size:12px;direction:rtl}
+.row{display:flex;align-items:flex-end;gap:6px;margin-top:2px}
+.row.gs{margin-top:8px}
+.row.m{justify-content:flex-end}
+.avc{width:34px;flex:none}
+.row:not(.ge) .avc>*{visibility:hidden}
+.msg{max-width:min(82%,520px);min-width:64px;padding:6px 10px 5px;border-radius:16px;background:var(--other);box-shadow:0 1px 1.5px rgba(0,0,0,.12);overflow-wrap:anywhere;direction:rtl;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;position:relative}
+[dir=ltr] .msg{direction:ltr}
+.row.m .msg{background:var(--mine)}
+.row.o:not(.gs) .msg{border-top-left-radius:5px}
+.row.o:not(.ge) .msg{border-bottom-left-radius:5px}
+.row.o.ge .msg{border-bottom-left-radius:4px}
+.row.m:not(.gs) .msg{border-top-right-radius:5px}
+.row.m:not(.ge) .msg{border-bottom-right-radius:5px}
+.row.m.ge .msg{border-bottom-right-radius:4px}
+.row.flash .msg{outline:2px solid var(--brand)}
+.msg .name{font-size:13px;font-weight:600;margin-bottom:1px}
+.row:not(.gs) .name,.row.m .name,#list[data-t=private] .name{display:none}
+.msg .rq{border-inline-start:3px solid var(--brand);padding:2px 8px;margin:2px 0 4px;background:rgba(51,144,236,.12);border-radius:4px 8px 8px 4px;font-size:13px;cursor:pointer;min-width:120px}
+.msg .rq b{display:block;color:var(--brand);font-size:12px;font-weight:600}
+.msg .rq span{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;opacity:.85}
+.msg .img{margin:2px -6px 4px;border-radius:12px;overflow:hidden;min-height:140px;background:rgba(0,0,0,.08);cursor:pointer}
+.msg .img img{display:block;width:100%;max-height:340px;object-fit:cover}
+.msg.hasimg{width:300px;max-width:82%}
+.msg .body{display:flex;flex-wrap:wrap;align-items:flex-end;gap:0 10px}
+.msg .txt{font-size:15px;line-height:1.7;white-space:pre-wrap;min-width:0}
+.msg .meta{margin-inline-start:auto;display:flex;gap:4px;align-items:center;font-size:11px;color:var(--muted);height:18px;white-space:nowrap}
+.row.m .meta .ck{color:var(--brand);display:inline-flex}
+.empty{direction:rtl;background:rgba(0,0,0,.28);color:#fff;padding:6px 14px;border-radius:14px;margin:auto;font-size:14px}
+#down{position:absolute;bottom:12px;inset-inline-end:12px;width:42px;height:42px;border-radius:50%;border:0;background:var(--card);color:var(--muted);box-shadow:0 2px 8px rgba(0,0,0,.25);display:flex;align-items:center;justify-content:center}
+#dcnt{position:absolute;top:-6px;inset-inline-start:-2px;background:var(--brand);color:#fff;border-radius:10px;min-width:20px;height:20px;font-size:11px;font-weight:600;display:flex;align-items:center;justify-content:center;padding:0 5px}
+#bar{display:flex;align-items:center;gap:10px;padding:6px 14px;background:var(--card);border-top:1px solid var(--line);color:var(--brand)}
+#bar .bt{flex:1;min-width:0;border-inline-start:2px solid var(--brand);padding-inline-start:8px}
+#bar .bt b{display:block;font-size:13px}#bar .bt span{display:block;font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#send{display:flex;align-items:center;gap:6px;padding:6px 8px;padding-bottom:max(8px,env(safe-area-inset-bottom));background:var(--card);border-top:1px solid var(--line)}
+#send .pill{flex:1;display:flex;align-items:center;background:var(--inp);border-radius:22px;padding:0 6px;min-width:0}
+#send .pill input{border:0;background:transparent;padding:11px 8px;font-size:16px}
+#attach{width:40px;height:40px;color:var(--muted)}
+#sendBtn{width:44px;height:44px;border:0;border-radius:50%;background:var(--brand);color:#fff;display:flex;align-items:center;justify-content:center;flex:none}
+[data-theme=dark] #sendBtn{color:#0e1621}
+#ro{padding:14px;text-align:center;background:var(--card);border-top:1px solid var(--line);color:var(--muted);font-size:14px;padding-bottom:max(14px,env(safe-area-inset-bottom))}
+.dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#f4b400;margin-inline-end:5px}.dot.ok{background:#31b545}
+
+/* پنجره‌ها */
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:20;display:flex;align-items:flex-end;justify-content:center}
+.sheet{background:var(--card);width:100%;max-width:420px;max-height:88dvh;overflow-y:auto;border-radius:18px 18px 0 0;padding:16px;padding-bottom:max(16px,env(safe-area-inset-bottom))}
+.sheet.actions{padding:6px 0}
+.drawer{align-self:stretch;margin-inline-end:auto;border-radius:0;width:290px;max-height:none;padding:0}
+.mi{color:var(--text);display:flex;align-items:center;gap:16px;width:100%;padding:13px 16px;border:0;background:none;text-align:start;font-size:15px}
+.mi:active{background:var(--inp)}.mi>svg{color:var(--muted)}
+.mi.dng,.mi.dng>svg{color:var(--danger)}
+.mh{padding:20px 16px;background:linear-gradient(135deg,#6bb7f6,#3390ec);color:#fff;padding-top:max(20px,env(safe-area-inset-top))}
+.mh b{display:block;margin-top:8px}.mh small{opacity:.85;direction:ltr;display:block;text-align:start}
+.row2{display:flex;gap:8px}.row2 .btn{margin-top:8px}
+.ur{display:flex;align-items:center;gap:12px;padding:8px 4px;cursor:pointer;font-size:15px}
+.ur .own{margin-inline-start:auto;color:var(--brand);font-size:12px}
+.ur .sel{margin-inline-start:auto;width:22px;height:22px;border-radius:50%;border:2px solid var(--line);display:flex;align-items:center;justify-content:center;color:#fff}
+.ur.on .sel{background:var(--brand);border-color:var(--brand)}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+.chip{display:flex;align-items:center;gap:4px;background:var(--inp);border-radius:16px;padding:3px 10px 3px 6px;font-size:13px;cursor:pointer}
+.hint{color:var(--muted);font-size:13px;text-align:center;padding:14px 8px}
+.sw{display:flex;align-items:center;gap:12px;margin:14px 0 0;color:var(--text);font-size:15px}
+.sw span{flex:1}.sw small{display:block;color:var(--muted);font-size:12px;margin-top:2px}
+.prev{width:100%;max-height:50dvh;object-fit:contain;border-radius:12px;background:#000;display:block;margin-bottom:10px}
+#viewer{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:30;display:flex;align-items:center;justify-content:center}
+#viewer img{max-width:100%;max-height:100%;object-fit:contain}
+@media(min-width:800px){#side{width:360px;display:flex!important;border-inline-end:1px solid var(--line);flex:none}#room{display:flex}.bk{display:none}.ov{align-items:center}.sheet{border-radius:18px}.drawer{border-radius:0;align-self:stretch}}
+</style>
+</head>
+<body>
+<div id="auth" hidden>
+  <div class="card">
+    <div class="logo"></div>
+    <h1 data-i="appname"></h1>
+    <p class="sub" data-i="authsub"></p>
+    <div class="tabs"><button id="tabLogin" class="on" type="button" data-i="login"></button><button id="tabSignup" type="button" data-i="signup"></button></div>
+    <form id="authForm">
+      <div id="nameRow" hidden><label for="username" data-i="uname_hint"></label><input id="username" maxlength="20" autocomplete="username"></div>
+      <label for="email" data-i="email"></label><input id="email" type="email" class="ltr" required autocomplete="email">
+      <label for="password" data-i="pass"></label><input id="password" type="password" class="ltr" required minlength="6">
+      <button id="authBtn" class="btn" type="submit"></button>
+      <button id="authBack" class="btn sec" type="button" hidden data-i="cancel"></button>
+      <div id="err" class="err"></div>
+    </form>
+  </div>
+</div>
+
+<div id="app" hidden>
+  <aside id="side">
+    <div class="hd"><button class="i" id="menuBtn" aria-label="menu"></button><div class="t"><b data-i="appname"></b></div></div>
+    <div id="convs"></div>
+    <button id="fab" aria-label="new"></button>
+  </aside>
+  <section id="room">
+    <div class="hd" id="rhd">
+      <button class="i bk" id="back" aria-label="back"></button>
+      <div id="hav"></div>
+      <div class="t" id="htitlebox"><b id="htitle"></b><small><span id="dot" class="dot"></span><span id="hsub"></span></small></div>
+    </div>
+    <div id="listwrap">
+      <div id="list"></div>
+      <button id="down" hidden aria-label="down"><span id="dcnt" hidden></span></button>
+    </div>
+    <div id="bar" hidden><span id="baric"></span><div class="bt"><b id="btitle"></b><span id="btxt"></span></div><button class="ib" id="bcancel" type="button"></button></div>
+    <form id="send" autocomplete="off">
+      <div class="pill">
+        <button class="ib" id="attach" type="button" aria-label="attach"></button>
+        <input id="text" data-p="msg_ph" maxlength="2000" enterkeyhint="send">
+      </div>
+      <button id="sendBtn" type="submit" hidden></button>
+      <input type="file" id="imgf" accept="image/*" hidden>
+    </form>
+    <div id="ro" hidden data-i="owner_only"></div>
+  </section>
+</div>
+<div id="ov" class="ov" hidden><div id="sheet" class="sheet"></div></div>
+<div id="viewer" hidden><img id="vimg" alt=""></div>
+
+<script>
+const SUPABASE_URL = "https://nblrsfdtbvlkqutvhowk.supabase.co";
+const SUPABASE_KEY = "sb_publishable_JUU0EKPvya0fTvxT-J6zUQ_d5ItslXf";
+const PUB = '00000000-0000-0000-0000-000000000001';
+const MCOLS = 'id,user_id,content,created_at,edited_at,conversation_id,reply_to,image_path';
+const $ = id => document.getElementById(id);
+const IC = {
+ edit:'<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/>',
+ trash:'<path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6M10 11v6M14 11v6"/>',
+ user:'<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>',
+ moon:'<path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8Z"/>',
+ sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
+ addu:'<circle cx="9" cy="8" r="4"/><path d="M1 21a8 8 0 0 1 16 0M19 8v6M16 11h6"/>',
+ out:'<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/>',
+ globe:'<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/>',
+ x:'<path d="M6 6l12 12M18 6L6 18"/>',
+ check:'<path d="M5 12.5l4.5 4.5L19 7.5"/>',
+ plane:'<path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7Z"/>',
+ menu:'<path d="M4 6h16M4 12h16M4 18h16"/>',
+ back:'<path d="M19 12H5M12 19l-7-7 7-7"/>',
+ reply:'<path d="M9 14 4 9l5-5"/><path d="M20 20v-7a4 4 0 0 0-4-4H4"/>',
+ copy:'<rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/>',
+ clip:'<path d="m21 11.5-8.6 8.6a5 5 0 0 1-7-7l8.6-8.6a3.3 3.3 0 0 1 4.7 4.7l-8.6 8.6a1.7 1.7 0 0 1-2.4-2.4l7.9-7.9"/>',
+ down:'<path d="m6 9 6 6 6-6"/>',
+ users:'<circle cx="9" cy="8" r="3.5"/><path d="M2 20a7 7 0 0 1 14 0"/><circle cx="17" cy="9" r="2.5"/><path d="M17 14a5 5 0 0 1 5 5"/>'
+};
+const ic = (n, sz = 20) => `<svg width="${sz}" height="${sz}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${IC[n]}</svg>`;
+
+const T = {
+fa:{appname:'پیام‌رسان',authsub:'برای شروع وارد شو یا ثبت‌نام کن',login:'ورود',signup:'ثبت‌نام',mkacc:'ساخت حساب',email:'ایمیل',pass:'رمز عبور (حداقل ۶ حرف)',uname_hint:'نام کاربری (۳ تا ۲۰ حرف، فارسی یا انگلیسی)',cancel:'انصراف',msg_ph:'پیام بنویس…',public:'گروه عمومی',group:'گروه',private:'چت شخصی',pub_sub:'همه کاربران',edited:'ویرایش‌شده',editing:'ویرایش پیام',reply:'پاسخ',reply_to:'پاسخ به',del_q:'این پیام حذف شود؟',empty:'هنوز پیامی نیست.',profile:'ویرایش پروفایل',dark:'حالت تاریک',light:'حالت روشن',lang:'زبان',addacc:'افزودن حساب کاربری',logout:'خروج از حساب',newchat:'گفت‌وگوی جدید',newgroup:'گروه جدید',gtitle:'نام گروه',search:'جستجو با نام کاربری…',create:'ساخت گروه',save:'ذخیره',uname:'نام کاربر',photo:'انتخاب تصویر',bad_name:'نام کاربری باید ۳ تا ۲۰ حرف باشد (حرف، عدد یا _ بدون فاصله).',taken:'این نام گرفته شده است.',sess_exp:'نشست این حساب منقضی شده، دوباره وارد شو.',members:'عضو',noconf:'حساب ساخته شد ولی تأیید ایمیل در Supabase فعال است.',e_login:'ایمیل یا رمز عبور اشتباه است.',e_net:'اتصال به سرور برقرار نشد.',e_dup:'این ایمیل قبلاً ثبت‌نام کرده است. وارد شو.',e_rate:'تعداد تلاش‌ها زیاد شد. چند دقیقه بعد دوباره امتحان کن.',e_weak:'رمز عبور باید حداقل ۶ حرف باشد.',e_mail:'ایمیل معتبر نیست.',e_img:'تصویر معتبر نیست یا حجمش زیاد است.',user:'کاربر',gneed:'نام گروه و حداقل یک عضو را انتخاب کن.',
+ search_hint:'برای پیدا کردن کاربر، نام کاربری او را (حداقل ۳ حرف) بنویس.',no_result:'کاربری پیدا نشد.',contacts:'مخاطبین شما',today:'امروز',yesterday:'دیروز',copy:'کپی',del:'حذف',edit:'ویرایش',photo_msg:'عکس',you:'شما',owner_only:'فقط مالک گروه می‌تواند پیام بفرستد',group_info:'اطلاعات گروه',owner:'مالک',only_owner:'فقط مالک پیام بدهد',only_owner_d:'سایر اعضا فقط می‌توانند پیام‌ها را بخوانند',del_group:'حذف گروه',del_group_q:'گروه و همه‌ی پیام‌هایش برای همه حذف شود؟ این کار قابل بازگشت نیست.',leave:'خروج از گروه',leave_q:'از این گروه خارج شوی؟',add_member:'افزودن عضو',rename:'نام گروه',deleted_msg:'پیام حذف‌شده',send:'ارسال',caption:'توضیح (اختیاری)',fail:'انجام نشد: '},
+en:{appname:'Messenger',authsub:'Sign in or create an account',login:'Sign in',signup:'Sign up',mkacc:'Create account',email:'Email',pass:'Password (min 6 chars)',uname_hint:'Username (3–20 letters, numbers or _)',cancel:'Cancel',msg_ph:'Write a message…',public:'Public group',group:'Group',private:'Private chat',pub_sub:'All users',edited:'edited',editing:'Edit message',reply:'Reply',reply_to:'Reply to',del_q:'Delete this message?',empty:'No messages yet.',profile:'Edit profile',dark:'Dark mode',light:'Light mode',lang:'Language',addacc:'Add account',logout:'Log out',newchat:'New chat',newgroup:'New group',gtitle:'Group name',search:'Search by username…',create:'Create group',save:'Save',uname:'Display name',photo:'Choose photo',bad_name:'Username must be 3–20 letters, numbers or _ (no spaces).',taken:'This username is taken.',sess_exp:'This account session expired, sign in again.',members:'members',noconf:'Account created, but email confirmation is on in Supabase.',e_login:'Wrong email or password.',e_net:'Could not reach the server.',e_dup:'This email is already registered. Sign in.',e_rate:'Too many attempts. Try again in a few minutes.',e_weak:'Password must be at least 6 characters.',e_mail:'Invalid email address.',e_img:'Invalid image or file too large.',user:'User',gneed:'Enter a group name and pick at least one member.',
+ search_hint:'Type a username (at least 3 letters) to find someone.',no_result:'No user found.',contacts:'Your contacts',today:'Today',yesterday:'Yesterday',copy:'Copy',del:'Delete',edit:'Edit',photo_msg:'Photo',you:'You',owner_only:'Only the group owner can post',group_info:'Group info',owner:'owner',only_owner:'Only owner can post',only_owner_d:'Other members can only read messages',del_group:'Delete group',del_group_q:'Delete the group and all its messages for everyone? This cannot be undone.',leave:'Leave group',leave_q:'Leave this group?',add_member:'Add members',rename:'Group name',deleted_msg:'Deleted message',send:'Send',caption:'Caption (optional)',fail:'Failed: '}
+};
+const LS = { get(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }, set(k, v){ try{ localStorage.setItem(k, v); }catch(e){} } };
+let lang = LS.get('lang') || 'fa';
+let theme = LS.get('theme') || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+const t = k => T[lang][k] || k;
+const loc = () => lang === 'fa' ? 'fa-IR' : 'en-US';
+function applyUI(){
+  const d = document.documentElement;
+  d.lang = lang; d.dir = lang === 'fa' ? 'rtl' : 'ltr'; d.dataset.theme = theme;
+  document.querySelector('meta[name=theme-color]').content = theme === 'dark' ? '#17212b' : '#ffffff';
+  document.querySelectorAll('[data-i]').forEach(e => e.textContent = t(e.dataset.i));
+  document.querySelectorAll('[data-p]').forEach(e => e.placeholder = t(e.dataset.p));
+  document.title = t('appname');
+}
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const hue = n => { let h = 0; for (const c of String(n)) h = (h * 31 + c.codePointAt(0)) % 360; return h; };
+function av(p, sz = 40, fb = '?'){
+  const n = (p && p.username) || fb;
+  if (p && p.avatar_url) return `<img class="av" style="width:${sz}px;height:${sz}px" src="${esc(p.avatar_url)}" alt="">`;
+  return `<div class="av" style="width:${sz}px;height:${sz}px;font-size:${sz*.45}px;background:hsl(${hue(n)},55%,52%)">${esc([...n][0].toUpperCase())}</div>`;
+}
+const uid = () => (crypto.randomUUID ? crypto.randomUUID() : ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c => (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)));
+const dayKey = iso => new Date(iso).toDateString();
+const fmtTime = iso => new Date(iso).toLocaleTimeString(loc(), { hour: '2-digit', minute: '2-digit' });
+function fmtDay(iso){
+  const d = new Date(iso), n = new Date();
+  if (d.toDateString() === n.toDateString()) return t('today');
+  if (new Date(n - 864e5).toDateString() === d.toDateString()) return t('yesterday');
+  return d.toLocaleDateString(loc(), d.getFullYear() === n.getFullYear() ? { day: 'numeric', month: 'long' } : { day: 'numeric', month: 'long', year: 'numeric' });
+}
+function fmtList(iso){
+  const d = new Date(iso), n = new Date();
+  if (d.toDateString() === n.toDateString()) return fmtTime(iso);
+  if (n - d < 6 * 864e5) return d.toLocaleDateString(loc(), { weekday: 'short' });
+  return d.toLocaleDateString(loc(), { month: 'short', day: 'numeric' });
+}
+function loadScript(src){ return new Promise((res, rej) => { const s = document.createElement('script'); s.src = src; s.onload = res; s.onerror = rej; document.head.appendChild(s); }); }
+function toJpeg(file, max = 1280){
+  return new Promise((res, rej) => {
+    const url = URL.createObjectURL(file), i = new Image();
+    i.onload = () => {
+      const k = Math.min(1, max / Math.max(i.width, i.height)), c = document.createElement('canvas');
+      c.width = Math.max(1, Math.round(i.width * k)); c.height = Math.max(1, Math.round(i.height * k));
+      const x = c.getContext('2d'); x.fillStyle = '#fff'; x.fillRect(0, 0, c.width, c.height); x.drawImage(i, 0, 0, c.width, c.height);
+      URL.revokeObjectURL(url); c.toBlob(b => b ? res(b) : rej(new Error('img')), 'image/jpeg', .8);
+    };
+    i.onerror = () => { URL.revokeObjectURL(url); rej(new Error('img')); };
+    i.src = url;
+  });
+}
+applyUI();
+$('menuBtn').innerHTML = ic('menu', 24); $('back').innerHTML = `<span class="flip">${ic('back', 24)}</span>`;
+$('fab').innerHTML = ic('edit', 24); document.querySelector('.logo').innerHTML = ic('plane', 30);
+$('bcancel').innerHTML = ic('x', 18); $('attach').innerHTML = ic('clip', 22);
+$('sendBtn').innerHTML = `<span class="flip">${ic('plane', 21)}</span>`; $('down').insertAdjacentHTML('afterbegin', ic('down', 22));
+(async () => {
+  try { await loadScript('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2'); }
+  catch (e) { try { await loadScript('https://unpkg.com/@supabase/supabase-js@2'); } catch (e2) { $('auth').hidden = false; $('err').textContent = t('e_net'); return; } }
+  start();
+})();
+
+function start(){
+  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  let mode = 'login', me = null, mp = null, cur = null, convs = [], chan = null, poller = null, editing = null, replying = null, lastId = 0, newBelow = 0, tick = 0, mrT = null, quiet = false;
+  const P = {}, shown = new Map(), order = [], MC = {}, IU = {}, missed = {};
+  const ACC = () => { try { return JSON.parse(LS.get('accounts') || '{}') || {}; } catch (e) { return {}; } };
+  const saveAcc = o => LS.set('accounts', JSON.stringify(o));
+  const fail = e => alert(t('fail') + ((e && e.message) || e));
+
+  sb.auth.onAuthStateChange((ev, s) => {
+    if (ev === 'SIGNED_OUT' && me && !quiet){ cleanup(); me = null; showAuth(false); return; }
+    if (s && s.user){ const a = ACC(); a[s.user.id] = { ...a[s.user.id], email: s.user.email, access_token: s.access_token, refresh_token: s.refresh_token }; saveAcc(a); }
+  });
+
+  // ---------- پنجره‌ها ----------
+  const openSheet = (html, cls = '') => { $('sheet').onclick = null; $('sheet').className = 'sheet ' + cls; $('sheet').innerHTML = html; $('ov').hidden = false; return $('sheet'); };
+  const closeSheet = () => { $('ov').hidden = true; $('sheet').innerHTML = ''; };
+  $('ov').onclick = e => { if (e.target === $('ov')) closeSheet(); };
+  $('viewer').onclick = () => { $('viewer').hidden = true; $('vimg').removeAttribute('src'); };
+
+  // ---------- ورود ----------
+  function setMode(m){
+    mode = m;
+    $('tabLogin').classList.toggle('on', m === 'login'); $('tabSignup').classList.toggle('on', m === 'signup');
+    $('nameRow').hidden = m !== 'signup';
+    $('authBtn').textContent = t(m === 'login' ? 'login' : 'mkacc'); $('err').textContent = '';
+  }
+  setMode('login');
+  $('tabLogin').onclick = () => setMode('login'); $('tabSignup').onclick = () => setMode('signup');
+  $('authBack').onclick = () => { $('auth').hidden = true; $('app').hidden = false; };
+  function faError(msg){
+    const m = (msg || '').toLowerCase();
+    if (m.includes('invalid login')) return t('e_login');
+    if (m.includes('already registered')) return t('e_dup');
+    if (m.includes('rate limit')) return t('e_rate');
+    if (m.includes('at least') || m.includes('weak')) return t('e_weak');
+    if (m.includes('invalid') && m.includes('email')) return t('e_mail');
+    if (m.includes('failed to fetch') || m.includes('network')) return t('e_net');
+    return msg || '?';
+  }
+  $('authForm').onsubmit = async e => {
+    e.preventDefault();
+    const email = $('email').value.trim(), password = $('password').value, username = $('username').value.trim();
+    $('err').textContent = '';
+    if (mode === 'signup' && !/^[A-Za-z0-9_؀-ۿ]{3,20}$/.test(username)){ $('err').textContent = t('bad_name'); return; }
+    $('authBtn').disabled = true;
+    try{
+      if (mode === 'signup'){
+        const { data, error } = await sb.auth.signUp({ email, password, options: { data: { username } } });
+        if (error) throw error;
+        if (!data.session){ $('err').textContent = t('noconf'); return; }
+        await enter(data.session.user);
+      } else {
+        const { data, error } = await sb.auth.signInWithPassword({ email, password });
+        if (error) throw error;
+        await enter(data.user);
+      }
+    }catch(err){ $('err').textContent = faError(err.message); }
+    finally{ $('authBtn').disabled = false; }
+  };
+
+  // ---------- پروفایل‌ها ----------
+  async function loadProfiles(){
+    const { data } = await sb.from('profiles').select('id,username,avatar_url');
+    (data || []).forEach(p => P[p.id] = p);
+  }
+  async function ensureP(id){ if (P[id] || (missed[id] && Date.now() - missed[id] < 30000)) return; await loadProfiles(); if (!P[id]) missed[id] = Date.now(); }
+  async function ensureProfile(){
+    await loadProfiles();
+    if (P[me.id]){ mp = P[me.id]; return true; }
+    let name = me.user_metadata && me.user_metadata.username;
+    for (let i = 0; i < 5; i++){
+      if (!name) name = (prompt(t('uname')) || '').trim();
+      if (!name) return false;
+      const { error } = await sb.from('profiles').insert({ id: me.id, username: name });
+      if (!error){ mp = P[me.id] = { id: me.id, username: name, avatar_url: null }; return true; }
+      if (error.code === '23505'){ alert(t('taken')); name = null; continue; }
+      alert(error.message); return false;
+    }
+    return false;
+  }
+
+  // ---------- فهرست گفت‌وگوها ----------
+  const convTitle = c => c.type === 'public' ? t('public') : c.type === 'group' ? (c.title || t('group')) : ((P[c.other] || {}).username || t('user'));
+  const convAv = (c, sz) => c.type === 'private' ? av(P[c.other], sz) : av({ username: convTitle(c) }, sz);
+  const convSub = c => c.type === 'public' ? t('pub_sub') : c.type === 'group' ? t('group') : t('private');
+  function convPreview(c){
+    const l = c.last; if (!l) return '';
+    const who = l.user_id === me.id ? t('you') + ': ' : (c.type !== 'private' ? ((P[l.user_id] || {}).username || '') + ': ' : '');
+    return who + (l.image ? t('photo_msg') + (l.content ? ', ' : '') : '') + (l.content || '');
+  }
+  const convTime = c => c.last ? new Date(c.last.created_at).getTime() : new Date(c.created_at || 0).getTime();
+  function sortConvs(){ convs.sort((a, b) => convTime(b) - convTime(a)); }
+  async function loadConvs(){
+    const [mem, sum] = await Promise.all([
+      sb.from('conversation_members').select('conversation_id,conversations(id,type,title,created_by,only_owner_can_post,created_at)').eq('user_id', me.id),
+      sb.rpc('chat_summaries')
+    ]);
+    await loadProfiles();
+    const S = {}; ((sum && sum.data) || []).forEach(r => S[r.conversation_id] = r);
+    const list = [{ id: PUB, type: 'public', title: null, created_by: null, only_owner_can_post: false, created_at: null }];
+    ((mem && mem.data) || []).forEach(m => { const c = m.conversations; if (c && c.id !== PUB) list.push(c); });
+    const pids = list.filter(c => c.type === 'private').map(c => c.id);
+    if (pids.length){
+      const { data } = await sb.from('conversation_members').select('conversation_id,user_id').in('conversation_id', pids).neq('user_id', me.id);
+      for (const r of (data || [])){ const c = list.find(x => x.id === r.conversation_id); if (c) c.other = r.user_id; }
+    }
+    list.forEach(c => {
+      const s = S[c.id]; c.last = s && s.last_id ? { id: s.last_id, content: s.last_content, image: !!s.last_image, user_id: s.last_user, created_at: s.last_at } : null;
+      c.unread = s ? (s.unread || 0) : 0;
+      const old = convs.find(x => x.id === c.id); if (old && old.count) c.count = old.count;
+    });
+    if (cur){ const nc = list.find(x => x.id === cur.id); if (nc){ nc.unread = 0; cur = nc; } }
+    convs = list; sortConvs(); renderConvs();
+  }
+  function renderConvs(){
+    const box = $('convs'); box.innerHTML = '';
+    convs.forEach(c => {
+      const d = document.createElement('div'); d.className = 'conv' + (cur && cur.id === c.id ? ' on' : '');
+      const l = c.last;
+      d.innerHTML = convAv(c, 54) + `<div class="cm"><div class="r1"><b>${esc(convTitle(c))}</b><span class="tm">${l && l.user_id === me.id ? `<span class="ck">${ic('check', 14)}</span>` : ''}${l ? esc(fmtList(l.created_at)) : ''}</span></div><div class="r2"><span class="pv">${esc(convPreview(c))}</span>${c.unread ? `<span class="bd">${c.unread > 99 ? '99+' : c.unread.toLocaleString(loc())}</span>` : ''}</div></div>`;
+      d.onclick = () => openConv(c); box.appendChild(d);
+    });
+  }
+  function bumpConv(m){
+    const c = convs.find(x => x.id === m.conversation_id);
+    if (!c){ loadConvs(); return; }
+    if (c.last && c.last.id >= m.id) return;
+    c.last = { id: m.id, content: m.content, image: !!m.image_path, user_id: m.user_id, created_at: m.created_at };
+    const viewing = cur && cur.id === c.id && !document.hidden;
+    if (!viewing && m.user_id !== me.id) c.unread = (c.unread || 0) + 1;
+    sortConvs(); renderConvs();
+  }
+  function removeConv(id){
+    convs = convs.filter(c => c.id !== id);
+    if (cur && cur.id === id){ if (history.state && history.state.chat) history.back(); else closeConv(); }
+    renderConvs();
+  }
+  function header(){
+    if (!cur) return;
+    $('hav').innerHTML = convAv(cur, 40); $('htitle').textContent = convTitle(cur);
+    $('hsub').textContent = cur.type === 'group' && cur.count ? cur.count.toLocaleString(loc()) + ' ' + t('members') : convSub(cur);
+  }
+  const canPost = () => !(cur && cur.type === 'group' && cur.only_owner_can_post && cur.created_by !== me.id);
+  function setComposer(){ const ok = canPost(); $('send').hidden = !ok; $('ro').hidden = ok; }
+  function syncSendBtn(){ $('sendBtn').hidden = !($('text').value.trim() || editing); }
+
+  // ---------- باز کردن گفت‌وگو ----------
+  async function openConv(c){
+    cur = c; shown.clear(); order.length = 0; lastId = 0; newBelow = 0; cancelBar(); updateDown();
+    $('app').classList.add('open');
+    if (innerWidth < 800 && !(history.state && history.state.chat)) history.pushState({ chat: 1 }, '');
+    $('list').dataset.t = c.type; header(); renderConvs(); setComposer();
+    $('list').innerHTML = '';
+    if (c.type === 'group'){
+      sb.from('conversation_members').select('user_id', { count: 'exact', head: true }).eq('conversation_id', c.id)
+        .then(r => { if (cur === c && r && r.count){ c.count = r.count; header(); } });
+    }
+    const { data, error } = await sb.from('messages').select(MCOLS).eq('conversation_id', c.id).order('id', { ascending: false }).limit(100);
+    if (cur !== c) return;
+    if (error){ $('list').innerHTML = `<div class="empty">${esc(error.message)}</div>`; return; }
+    if (!data.length) $('list').innerHTML = `<div class="empty" id="empty">${t('empty')}</div>`;
+    if (data.some(m => !P[m.user_id])) await loadProfiles();
+    if (cur !== c) return;
+    for (const m of data.reverse()) addMessage(m, true);
+    relayout(); $('list').scrollTop = $('list').scrollHeight; resolveImages(); markRead();
+  }
+  function closeConv(){ $('app').classList.remove('open'); cur = null; cancelBar(); renderConvs(); }
+  $('back').onclick = () => { if (history.state && history.state.chat) history.back(); else closeConv(); };
+  addEventListener('popstate', () => { if ($('app').classList.contains('open')) closeConv(); });
+
+  // ---------- پیام‌ها ----------
+  const nearBottom = () => { const l = $('list'); return l.scrollHeight - l.scrollTop - l.clientHeight < 120; };
+  function updateDown(){
+    const l = $('list'), far = l.scrollHeight - l.scrollTop - l.clientHeight > 300;
+    $('down').hidden = !(far || newBelow > 0); $('dcnt').hidden = !newBelow; $('dcnt').textContent = newBelow.toLocaleString(loc());
+  }
+  $('list').addEventListener('scroll', () => { if (nearBottom()) newBelow = 0; updateDown(); });
+  $('down').onclick = () => { newBelow = 0; $('list').scrollTo({ top: $('list').scrollHeight, behavior: 'smooth' }); updateDown(); };
+
+  function buildRow(m){
+    const mine = m.user_id === me.id, showAv = !mine && cur.type !== 'private';
+    const row = document.createElement('div'); row.className = 'row ' + (mine ? 'm' : 'o'); row.dataset.id = m.id;
+    row.innerHTML = (showAv ? '<div class="avc"></div>' : '') +
+      '<div class="msg"><div class="name"></div><div class="rq" hidden></div><div class="img" hidden></div><div class="body"><span class="txt" dir="auto"></span><span class="meta"><span class="ed"></span><span class="tm"></span><span class="ck"></span></span></div></div>';
+    return row;
+  }
+  function addMessage(m, init){
+    if (shown.has(m.id) || !cur || m.conversation_id !== cur.id) return;
+    const list = $('list'), e = $('empty'); if (e) e.remove();
+    const near = nearBottom(), mine = m.user_id === me.id;
+    const row = buildRow(m);
+    shown.set(m.id, { el: row, m }); order.push(m.id); list.appendChild(row); paint(m.id);
+    if (m.id > lastId) lastId = m.id;
+    if (init) return;
+    relayout();
+    if (near || mine){ row.dataset.stick = '1'; list.scrollTop = list.scrollHeight; }
+    else { newBelow++; updateDown(); }
+    resolveImages();
+  }
+  function paint(id){
+    const s = shown.get(id); if (!s) return; const { el, m } = s;
+    const mine = m.user_id === me.id, pr = P[m.user_id];
+    const txt = el.querySelector('.txt'); txt.textContent = m.content || ''; txt.hidden = !m.content;
+    el.querySelector('.ed').textContent = m.edited_at ? t('edited') : '';
+    el.querySelector('.tm').textContent = fmtTime(m.created_at);
+    el.querySelector('.ck').innerHTML = mine ? ic('check', 14) : '';
+    const nm = el.querySelector('.name'); nm.textContent = (pr && pr.username) || t('user'); nm.style.color = `hsl(${hue(nm.textContent)} 55% var(--nl))`;
+    const avc = el.querySelector('.avc'); if (avc) avc.innerHTML = av(pr || { username: t('user') }, 34);
+    el.querySelector('.msg').classList.toggle('hasimg', !!m.image_path);
+    const ib = el.querySelector('.img'); ib.hidden = !m.image_path;
+    if (m.image_path && !ib.firstChild) ib.innerHTML = '<img alt="">';
+    const rq = el.querySelector('.rq');
+    if (m.reply_to){
+      rq.hidden = false; rq.dataset.rid = m.reply_to;
+      getMsg(m.reply_to).then(r => {
+        const who = r.deleted ? '' : ((P[r.user_id] || {}).username || t('user'));
+        rq.innerHTML = `<b>${esc(who)}</b><span>${esc(r.deleted ? t('deleted_msg') : (r.content || (r.image_path ? t('photo_msg') : '')))}</span>`;
+      });
+    } else rq.hidden = true;
+  }
+  async function getMsg(id){
+    const s = shown.get(id); if (s) return s.m;
+    if (MC[id]) return MC[id];
+    const { data } = await sb.from('messages').select('id,user_id,content,image_path').eq('id', id).maybeSingle();
+    return MC[id] = data || { deleted: true };
+  }
+  function relayout(){
+    const list = $('list'); let prev = null;
+    for (const id of order){
+      const s = shown.get(id); if (!s) continue; const { el, m } = s;
+      const newDay = !prev || dayKey(prev.m.created_at) !== dayKey(m.created_at);
+      let sep = el.previousElementSibling && el.previousElementSibling.classList.contains('sep') ? el.previousElementSibling : null;
+      if (newDay){ if (!sep){ sep = document.createElement('div'); sep.className = 'sep'; list.insertBefore(sep, el); } sep.textContent = fmtDay(m.created_at); }
+      else if (sep) sep.remove();
+      const same = prev && !newDay && prev.m.user_id === m.user_id && (new Date(m.created_at) - new Date(prev.m.created_at)) < 300000;
+      el.classList.toggle('gs', !same);
+      if (prev) prev.el.classList.toggle('ge', !same);
+      el.classList.add('ge');
+      prev = s;
+    }
+  }
+  function updateMsg(m){
+    const s = shown.get(m.id); if (!s) return;
+    s.m = { ...s.m, ...m }; MC[m.id] = s.m; paint(m.id);
+    shown.forEach((x, id) => { if (x.m.reply_to === m.id) paint(id); });
+    const c = convs.find(x => x.id === s.m.conversation_id); if (c && c.last && c.last.id === m.id){ c.last.content = s.m.content; renderConvs(); }
+  }
+  function removeMsg(id){
+    const s = shown.get(id); if (!s) return;
+    s.el.remove(); shown.delete(id); const i = order.indexOf(id); if (i >= 0) order.splice(i, 1);
+    MC[id] = { deleted: true }; relayout();
+    shown.forEach((x, k) => { if (x.m.reply_to === id) paint(k); });
+  }
+  function scrollToMsg(id){
+    const s = shown.get(id); if (!s) return;
+    s.el.scrollIntoView({ block: 'center', behavior: 'smooth' }); s.el.classList.add('flash'); setTimeout(() => s.el.classList.remove('flash'), 1200);
+  }
+  async function resolveImages(){
+    const need = [...new Set([...shown.values()].map(s => s.m.image_path).filter(p => p && !IU[p]))];
+    if (need.length){
+      const { data } = await sb.storage.from('chat-images').createSignedUrls(need, 3600);
+      (data || []).forEach(r => { if (r.signedUrl) IU[r.path] = r.signedUrl; });
+    }
+    shown.forEach(({ el, m }) => {
+      if (!m.image_path) return;
+      const img = el.querySelector('.img img');
+      if (img && IU[m.image_path] && img.dataset.p !== m.image_path){
+        img.dataset.p = m.image_path;
+        img.onload = () => { if (el.dataset.stick === '1') $('list').scrollTop = $('list').scrollHeight; };
+        img.src = IU[m.image_path];
+      }
+    });
+  }
+  function markRead(){
+    if (!cur || !lastId) return;
+    cur.unread = 0; renderConvs();
+    clearTimeout(mrT); const cid = cur.id, mid = lastId;
+    mrT = setTimeout(() => { sb.rpc('mark_read', { cid, mid }); }, 400);
+  }
+
+  // ---------- کلیک‌ها و نگه‌داشتن روی پیام ----------
+  let lp = null, lpx = 0, lpy = 0;
+  const L = $('list');
+  L.addEventListener('pointerdown', e => {
+    const r = e.target.closest('.row'); if (!r || e.target.closest('.rq')) return;
+    lpx = e.clientX; lpy = e.clientY; clearTimeout(lp);
+    lp = setTimeout(() => { lp = null; msgMenu(+r.dataset.id); }, 450);
+  });
+  L.addEventListener('pointermove', e => { if (lp && Math.hypot(e.clientX - lpx, e.clientY - lpy) > 10){ clearTimeout(lp); lp = null; } });
+  ['pointerup', 'pointercancel', 'scroll'].forEach(ev => L.addEventListener(ev, () => { clearTimeout(lp); lp = null; }));
+  L.addEventListener('contextmenu', e => { const r = e.target.closest('.row'); if (r){ e.preventDefault(); clearTimeout(lp); lp = null; msgMenu(+r.dataset.id); } });
+  L.addEventListener('click', e => {
+    const q = e.target.closest('.rq'); if (q){ scrollToMsg(+q.dataset.rid); return; }
+    const im = e.target.closest('.img img'); if (im && im.src){ $('vimg').src = im.src; $('viewer').hidden = false; }
+  });
+  function copyText(s){
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(s).catch(() => {});
+    else { const a = document.createElement('textarea'); a.value = s; document.body.appendChild(a); a.select(); try{ document.execCommand('copy'); }catch(e){} a.remove(); }
+  }
+  function msgMenu(id){
+    const s = shown.get(id); if (!s) return; const m = s.m, mine = m.user_id === me.id;
+    const items = [];
+    if (canPost()) items.push(['reply', 'reply', t('reply')]);
+    if (m.content) items.push(['copy', 'copy', t('copy')]);
+    if (mine){ items.push(['edit', 'edit', t('edit')]); items.push(['del', 'trash', t('del'), 'dng']); }
+    if (!items.length) return;
+    const sh = openSheet(items.map(([a, i, l, c]) => `<button class="mi ${c || ''}" data-act="${a}">${ic(i, 22)} ${l}</button>`).join(''), 'actions');
+    sh.onclick = async e => {
+      const b = e.target.closest('button'); if (!b) return; const a = b.dataset.act; closeSheet();
+      if (a === 'reply') startReply(m);
+      else if (a === 'copy') copyText(m.content);
+      else if (a === 'edit') startEdit(m);
+      else if (a === 'del' && confirm(t('del_q'))){
+        if (m.image_path) await sb.storage.from('chat-images').remove([m.image_path]);
+        const { error } = await sb.from('messages').delete().eq('id', m.id);
+        if (error) fail(error); else removeMsg(m.id);
+      }
+    };
+  }
+  function showBar(icon, title, txt){ $('baric').innerHTML = ic(icon, 22); $('btitle').textContent = title; $('btxt').textContent = txt; $('bar').hidden = false; $('text').focus(); }
+  function startReply(m){ cancelBar(); replying = m; showBar('reply', t('reply_to') + ' ' + ((P[m.user_id] || {}).username || t('user')), m.content || t('photo_msg')); }
+  function startEdit(m){ cancelBar(); editing = m.id; showBar('edit', t('editing'), m.content || t('photo_msg')); $('text').value = m.content || ''; syncSendBtn(); }
+  function cancelBar(){ const was = editing; editing = null; replying = null; $('bar').hidden = true; if (was) $('text').value = ''; syncSendBtn(); }
+  $('bcancel').onclick = cancelBar;
+  $('text').addEventListener('input', syncSendBtn);
+
+  // ---------- ارسال ----------
+  $('send').onsubmit = async e => {
+    e.preventDefault();
+    const content = $('text').value.trim(); if (!cur) return;
+    if (editing){
+      const o = shown.get(editing);
+      if (!o) { cancelBar(); return; }
+      if (!content && !o.m.image_path) return;
+      if (o.m.content === content){ cancelBar(); return; }
+      $('sendBtn').disabled = true;
+      const { data, error } = await sb.from('messages').update({ content }).eq('id', editing).select(MCOLS).single();
+      $('sendBtn').disabled = false;
+      if (error){ fail(error); return; }
+      updateMsg(data); cancelBar(); return;
+    }
+    if (!content) return;
+    const row = { user_id: me.id, conversation_id: cur.id, content }; if (replying) row.reply_to = replying.id;
+    $('sendBtn').disabled = true;
+    const { data, error } = await sb.from('messages').insert(row).select(MCOLS).single();
+    $('sendBtn').disabled = false;
+    if (error){ fail(error); return; }
+    $('text').value = ''; cancelBar(); addMessage(data); bumpConv(data); markRead(); $('text').focus();
+  };
+  $('attach').onclick = () => $('imgf').click();
+  $('imgf').onchange = async () => {
+    const f = $('imgf').files[0]; $('imgf').value = ''; if (!f || !cur) return;
+    let blob; try{ blob = await toJpeg(f); }catch(err){ alert(t('e_img')); return; }
+    const url = URL.createObjectURL(blob), c = cur;
+    const s = openSheet(`<img class="prev" src="${url}" alt=""><input id="cap" maxlength="1000" placeholder="${t('caption')}"><div class="err" id="ie"></div><div class="row2"><button class="btn" id="isend">${t('send')}</button><button class="btn sec" id="icancel">${t('cancel')}</button></div>`);
+    $('cap').value = $('text').value;
+    $('icancel').onclick = () => { URL.revokeObjectURL(url); closeSheet(); };
+    $('isend').onclick = async () => {
+      $('isend').disabled = true;
+      try{
+        const path = `${c.id}/${uid()}.jpg`;
+        const up = await sb.storage.from('chat-images').upload(path, blob, { contentType: 'image/jpeg' });
+        if (up.error) throw up.error;
+        const row = { user_id: me.id, conversation_id: c.id, content: $('cap').value.trim(), image_path: path }; if (replying) row.reply_to = replying.id;
+        const { data, error } = await sb.from('messages').insert(row).select(MCOLS).single();
+        if (error){ sb.storage.from('chat-images').remove([path]); throw error; }
+        URL.revokeObjectURL(url); closeSheet(); $('text').value = ''; cancelBar();
+        if (cur === c){ addMessage(data); } bumpConv(data); markRead();
+      }catch(err){ $('ie').textContent = t('fail') + (err.message || err); $('isend').disabled = false; }
+    };
+  };
+
+  // ---------- دریافت لحظه‌ای ----------
+  async function poll(){
+    if (!cur) return; const c = cur;
+    const { data } = await sb.from('messages').select(MCOLS).eq('conversation_id', c.id).gt('id', lastId).order('id');
+    for (const m of (data || [])){ if (cur !== c) return; await ensureP(m.user_id); bumpConv(m); addMessage(m); }
+    if (data && data.length) markRead();
+  }
+  function subscribe(){
+    chan = sb.channel('rt-' + me.id)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'messages' }, async p => {
+        if (p.eventType === 'DELETE') return removeMsg(p.old.id);
+        const m = p.new;
+        if (p.eventType === 'UPDATE'){ if (cur && m.conversation_id === cur.id) updateMsg(m); return; }
+        await ensureP(m.user_id); bumpConv(m);
+        if (cur && m.conversation_id === cur.id){ addMessage(m); if (!document.hidden) markRead(); }
+      })
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'conversation_members', filter: `user_id=eq.${me.id}` }, () => loadConvs())
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'conversations' }, p => {
+        const c = convs.find(x => x.id === p.new.id); if (!c) return;
+        c.title = p.new.title; c.only_owner_can_post = p.new.only_owner_can_post; renderConvs();
+        if (cur && cur.id === c.id){ header(); setComposer(); }
+      })
+      .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'conversations' }, p => removeConv(p.old.id))
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles' }, p => { if (p.new && p.new.id){ P[p.new.id] = p.new; if (p.new.id === me.id) mp = p.new; renderConvs(); header(); shown.forEach((_, id) => paint(id)); } })
+      .subscribe(s => $('dot').classList.toggle('ok', s === 'SUBSCRIBED'));
+    poller = setInterval(() => { if (document.hidden) return; poll(); if (++tick % 5 === 0) loadConvs(); }, 4000);
+  }
+
+  // ---------- ورود به برنامه ----------
+  function cleanup(){
+    if (chan){ sb.removeChannel(chan); chan = null; }
+    if (poller){ clearInterval(poller); poller = null; }
+    shown.clear(); order.length = 0; cur = null; lastId = 0; editing = null; replying = null; convs = [];
+    $('bar').hidden = true; $('list').innerHTML = ''; $('convs').innerHTML = '';
+  }
+  async function enter(user){
+    cleanup(); me = user;
+    if (!(await ensureProfile())){ quiet = true; await sb.auth.signOut({ scope: 'local' }); quiet = false; me = null; showAuth(false); return; }
+    const a = ACC(); a[me.id] = { ...a[me.id], username: mp.username, avatar_url: mp.avatar_url }; saveAcc(a);
+    $('auth').hidden = true; $('authBack').hidden = true; $('app').hidden = false; $('app').classList.remove('open'); closeSheet();
+    await loadConvs(); subscribe();
+    if (innerWidth >= 800) openConv(convs.find(c => c.id === PUB));
+    $('password').value = '';
+  }
+  async function switchTo(id){
+    const acc = ACC()[id]; closeSheet(); if (!acc) return;
+    cleanup();
+    const { data, error } = await sb.auth.setSession({ access_token: acc.access_token, refresh_token: acc.refresh_token });
+    if (error || !data.user){ const a = ACC(); delete a[id]; saveAcc(a); alert(t('sess_exp')); if (me) return enter(me); return showAuth(false); }
+    await enter(data.user);
+  }
+  function showAuth(canCancel){ closeSheet(); $('app').hidden = true; $('auth').hidden = false; $('authBack').hidden = !canCancel; setMode('login'); }
+  async function logout(){
+    const id = me.id; closeSheet();
+    quiet = true; await sb.auth.signOut({ scope: 'local' }); quiet = false;
+    const a = ACC(); delete a[id]; saveAcc(a);
+    cleanup(); me = null;
+    const next = Object.keys(a)[0];
+    if (next) switchTo(next); else showAuth(false);
+  }
+
+  // ---------- منو ----------
+  $('menuBtn').onclick = () => {
+    const others = Object.entries(ACC()).filter(([id]) => id !== me.id);
+    const s = openSheet(`<div class="mh">${av(mp, 56)}<b>${esc(mp.username)}</b><small>${esc(me.email)}</small></div>
+      <button class="mi" data-m="profile">${ic('user', 22)} ${t('profile')}</button>
+      <button class="mi" data-m="theme">${theme === 'dark' ? ic('sun', 22) + ' ' + t('light') : ic('moon', 22) + ' ' + t('dark')}</button>
+      <div class="mi">${ic('globe', 22)} ${t('lang')}<span style="flex:1"></span><button class="btn sec" style="margin:0;width:auto;padding:6px 12px" data-lang="fa">فارسی</button><button class="btn sec" style="margin:0;width:auto;padding:6px 12px" data-lang="en">English</button></div>
+      ${others.map(([id, a]) => `<button class="mi" data-acc="${id}">${av(a, 32, a.email || '?')}<span>${esc(a.username || a.email)}</span></button>`).join('')}
+      <button class="mi" data-m="add">${ic('addu', 22)} ${t('addacc')}</button>
+      <button class="mi dng" data-m="out">${ic('out', 22)} ${t('logout')}</button>`, 'drawer');
+    s.onclick = e => {
+      const b = e.target.closest('button'); if (!b) return;
+      if (b.dataset.lang){ lang = b.dataset.lang; LS.set('lang', lang); applyUI(); setMode(mode); header(); renderConvs(); shown.forEach((_, id) => paint(id)); relayout(); const em = $('empty'); if (em) em.textContent = t('empty'); closeSheet(); return; }
+      if (b.dataset.acc) return switchTo(b.dataset.acc);
+      const m = b.dataset.m;
+      if (m === 'theme'){ theme = theme === 'dark' ? 'light' : 'dark'; LS.set('theme', theme); applyUI(); closeSheet(); }
+      else if (m === 'profile') profileSheet();
+      else if (m === 'add') showAuth(true);
+      else if (m === 'out') logout();
+    };
+  };
+
+  // ---------- ویرایش پروفایل ----------
+  function profileSheet(){
+    let blob = null;
+    openSheet(`<div style="text-align:center"><div id="pv" style="display:inline-block">${av(mp, 90)}</div></div>
+      <input type="file" id="pf" accept="image/*" hidden><button class="btn sec" id="pick">${t('photo')}</button>
+      <label>${t('uname')}</label><input id="pn" maxlength="20" value="${esc(mp.username)}">
+      <div id="pe" class="err"></div>
+      <div class="row2"><button class="btn" id="ps">${t('save')}</button><button class="btn sec" id="pc">${t('cancel')}</button></div>`);
+    $('pick').onclick = () => $('pf').click();
+    $('pc').onclick = closeSheet;
+    $('pf').onchange = () => {
+      const f = $('pf').files[0]; if (!f) return;
+      $('pe').textContent = '';
+      if (f.size > 15e6){ $('pe').textContent = t('e_img'); return; }
+      const i = new Image();
+      i.onload = () => {
+        const c = document.createElement('canvas'); c.width = c.height = 256; const m = Math.min(i.width, i.height);
+        c.getContext('2d').drawImage(i, (i.width - m) / 2, (i.height - m) / 2, m, m, 0, 0, 256, 256); URL.revokeObjectURL(i.src);
+        c.toBlob(b => { blob = b; $('pv').innerHTML = `<img class="av" style="width:90px;height:90px" src="${c.toDataURL('image/jpeg', .85)}">`; }, 'image/jpeg', .85);
+      };
+      i.onerror = () => { $('pe').textContent = t('e_img'); };
+      i.src = URL.createObjectURL(f);
+    };
+    $('ps').onclick = async () => {
+      const name = $('pn').value.trim();
+      if (!/^[A-Za-z0-9_؀-ۿ]{3,20}$/.test(name)){ $('pe').textContent = t('bad_name'); return; }
+      $('ps').disabled = true;
+      try{
+        let url = mp.avatar_url;
+        if (blob){
+          const path = `${me.id}/${Date.now()}.jpg`;
+          const { error } = await sb.storage.from('avatars').upload(path, blob, { contentType: 'image/jpeg' });
+          if (error) throw error;
+          url = sb.storage.from('avatars').getPublicUrl(path).data.publicUrl;
+        }
+        const { error } = await sb.from('profiles').update({ username: name, avatar_url: url }).eq('id', me.id);
+        if (error) throw error;
+        if (blob && mp.avatar_url){ const o = mp.avatar_url.split('/avatars/')[1]; if (o) sb.storage.from('avatars').remove([o]); }
+        mp = P[me.id] = { ...mp, username: name, avatar_url: url };
+        const a = ACC(); a[me.id] = { ...a[me.id], username: name, avatar_url: url }; saveAcc(a);
+        renderConvs(); header(); closeSheet();
+      }catch(err){ $('pe').textContent = err.code === '23505' ? t('taken') : err.message; $('ps').disabled = false; }
+    };
+  }
+
+  // ---------- گفت‌وگوی جدید / افزودن عضو (جستجو با نام کاربری) ----------
+  $('fab').onclick = () => newChatSheet('private');
+  function newChatSheet(kind, gid){
+    let gmode = kind !== 'private', results = [], searched = '', timer = null;
+    const picked = new Map();
+    openSheet(`${kind === 'add' ? `<b style="display:block;margin-bottom:10px">${t('add_member')}</b>` : `<div class="tabs"><button id="nt1" class="${gmode ? '' : 'on'}">${t('private')}</button><button id="nt2" class="${gmode ? 'on' : ''}">${t('newgroup')}</button></div>`}
+      <div id="gt" ${kind === 'group' || kind === 'private' && gmode ? '' : 'hidden'}><input id="gtitle" maxlength="40" placeholder="${t('gtitle')}"><div style="height:8px"></div></div>
+      <div id="chips" class="chips"></div>
+      <input id="q" placeholder="${t('search')}" autocomplete="off" autocapitalize="off">
+      <div id="ul" style="margin-top:6px"></div>
+      <button class="btn" id="mk" ${gmode ? '' : 'hidden'}>${kind === 'add' ? t('add_member') : t('create')}</button>`);
+    const contacts = () => convs.filter(c => c.type === 'private' && P[c.other]).map(c => P[c.other]);
+    function chips(){
+      $('chips').innerHTML = [...picked.values()].map(p => `<span class="chip" data-u="${p.id}">${esc(p.username)} ${ic('x', 14)}</span>`).join('');
+    }
+    function draw(){
+      const q = $('q').value.trim();
+      let list, hint = '';
+      if (q.length >= 3){ list = results; if (searched === q && !list.length) hint = `<div class="hint">${t('no_result')}</div>`; }
+      else { list = gmode ? contacts() : []; if (!list.length) hint = `<div class="hint">${t('search_hint')}</div>`; else hint = `<div class="hint" style="padding:6px 4px;text-align:start">${t('contacts')}</div>`; }
+      $('ul').innerHTML = hint + list.map(p => `<div class="ur${picked.has(p.id) ? ' on' : ''}" data-u="${p.id}">${av(p, 40)}<span>${esc(p.username)}</span>${gmode ? `<span class="sel">${picked.has(p.id) ? ic('check', 14) : ''}</span>` : ''}</div>`).join('');
+      chips();
+    }
+    function setG(g){ gmode = g; $('nt1').classList.toggle('on', !g); $('nt2').classList.toggle('on', g); $('gt').hidden = !g; $('mk').hidden = !g; draw(); }
+    if (kind !== 'add'){ $('nt1').onclick = () => setG(false); $('nt2').onclick = () => setG(true); $('gt').hidden = !gmode; }
+    $('q').oninput = () => {
+      clearTimeout(timer); const q = $('q').value.trim();
+      if (q.length < 3){ results = []; searched = ''; draw(); return; }
+      timer = setTimeout(async () => {
+        const { data } = await sb.rpc('find_user', { q });
+        if ($('q') && $('q').value.trim() === q){ results = data || []; searched = q; draw(); }
+      }, 300);
+    };
+    $('chips').onclick = e => { const c = e.target.closest('[data-u]'); if (c){ picked.delete(c.dataset.u); draw(); } };
+    $('ul').onclick = async e => {
+      const r = e.target.closest('[data-u]'); if (!r) return;
+      const id = r.dataset.u, p = results.find(x => x.id === id) || P[id]; if (!p) return;
+      if (gmode){ if (picked.has(id)) picked.delete(id); else picked.set(id, p); draw(); return; }
+      const { data, error } = await sb.rpc('start_private_chat', { other: id });
+      if (error) return fail(error);
+      await finish(data);
+    };
+    $('mk').onclick = async () => {
+      if (kind === 'add'){
+        if (!picked.size) return;
+        const { error } = await sb.rpc('add_group_members', { cid: gid, members: [...picked.keys()] });
+        if (error) return fail(error);
+        closeSheet(); await loadProfiles(); const c = convs.find(x => x.id === gid); if (c){ c.count = 0; if (cur === c){ const r = await sb.from('conversation_members').select('user_id', { count: 'exact', head: true }).eq('conversation_id', gid); if (r && r.count) c.count = r.count; header(); } }
+        return;
+      }
+      const title = $('gtitle').value.trim();
+      if (!title || !picked.size) return alert(t('gneed'));
+      const { data, error } = await sb.rpc('create_group', { gtitle: title, members: [...picked.keys()] });
+      if (error) return fail(error);
+      await finish(data);
+    };
+    async function finish(cid){ closeSheet(); await loadConvs(); const c = convs.find(x => x.id === cid); if (c) openConv(c); }
+    draw();
+  }
+
+  // ---------- تنظیمات گروه ----------
+  $('htitlebox').onclick = () => { if (cur && cur.type === 'group') groupInfo(); };
+  async function removeChatImages(cid){
+    try{
+      const { data } = await sb.storage.from('chat-images').list(cid, { limit: 1000 });
+      const paths = (data || []).map(o => cid + '/' + o.name);
+      if (paths.length) await sb.storage.from('chat-images').remove(paths);
+    }catch(e){}
+  }
+  async function groupInfo(){
+    const c = cur; if (!c || c.type !== 'group') return;
+    const owner = c.created_by === me.id;
+    const { data: mem } = await sb.from('conversation_members').select('user_id').eq('conversation_id', c.id);
+    await loadProfiles();
+    const ids = (mem || []).map(x => x.user_id);
+    const rows = ids.map(id => { const p = P[id] || { username: t('user') }; return `<div class="ur">${av(p, 40)}<span>${esc(p.username)}</span>${id === c.created_by ? `<span class="own">${t('owner')}</span>` : ''}</div>`; }).join('');
+    openSheet(`<div style="text-align:center">${av({ username: convTitle(c) }, 80)}</div>
+      ${owner ? `<label>${t('rename')}</label><input id="gname" maxlength="40" value="${esc(c.title || '')}">
+        <label class="sw"><span><b>${t('only_owner')}</b><small>${t('only_owner_d')}</small></span><input type="checkbox" id="gown" ${c.only_owner_can_post ? 'checked' : ''}></label>
+        <div id="ge" class="err"></div>
+        <button class="btn" id="gsave">${t('save')}</button>
+        <button class="btn sec" id="gadd">${ic('addu', 18)} ${t('add_member')}</button>`
+        : `<h3 style="text-align:center;margin:10px 0 4px">${esc(convTitle(c))}</h3>${c.only_owner_can_post ? `<p class="sub">${t('owner_only')}</p>` : ''}`}
+      <label>${ids.length.toLocaleString(loc())} ${t('members')}</label>${rows}
+      ${owner ? `<button class="btn sec dng" id="gdel">${ic('trash', 18)} ${t('del_group')}</button>` : `<button class="btn sec dng" id="gleave">${ic('out', 18)} ${t('leave')}</button>`}`);
+    if (owner){
+      $('gsave').onclick = async () => {
+        const title = $('gname').value.trim();
+        if (!title){ $('ge').textContent = t('gneed'); return; }
+        $('gsave').disabled = true;
+        const { data, error } = await sb.from('conversations').update({ title, only_owner_can_post: $('gown').checked }).eq('id', c.id).select('id,title,only_owner_can_post').single();
+        $('gsave').disabled = false;
+        if (error){ $('ge').textContent = error.message; return; }
+        c.title = data.title; c.only_owner_can_post = data.only_owner_can_post; renderConvs(); header(); setComposer(); closeSheet();
+      };
+      $('gadd').onclick = () => newChatSheet('add', c.id);
+      $('gdel').onclick = async () => {
+        if (!confirm(t('del_group_q'))) return;
+        await removeChatImages(c.id);
+        const { error } = await sb.from('conversations').delete().eq('id', c.id);
+        if (error) return fail(error);
+        closeSheet(); removeConv(c.id);
+      };
+    } else {
+      $('gleave').onclick = async () => {
+        if (!confirm(t('leave_q'))) return;
+        const { error } = await sb.from('conversation_members').delete().eq('conversation_id', c.id).eq('user_id', me.id);
+        if (error) return fail(error);
+        closeSheet(); removeConv(c.id);
+      };
+    }
+  }
+
+  // ---------- شروع ----------
+  document.addEventListener('visibilitychange', () => { if (!document.hidden && me && cur){ poll(); markRead(); } });
+  sb.auth.getSession().then(({ data }) => { if (data.session) enter(data.session.user); else $('auth').hidden = false; }).catch(() => { $('auth').hidden = false; });
+}
+</script>
+</body>
+</html>
